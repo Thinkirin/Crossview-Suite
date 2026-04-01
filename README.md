@@ -20,7 +20,7 @@ This repository currently contains the **CrossViewer** model code and training/e
 ## Repository Layout
 
 ```text
-CrossViewer-Suite/
+Crossview-Suite/
 ├── README.md
 └── CrossViewer/
     ├── configs/          # Training configs and ablation settings
