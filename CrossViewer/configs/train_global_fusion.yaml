@@ -1,8 +1,8 @@
-# CrossViewer Training Configuration with Global Multi-View Fusion
-# This config enables the new global attention mechanism and consistency constraint
+
+
 
 model:
-  vision_encoder_path: null  # set your local model path or Hugging Face model id
+  vision_encoder_path: null  
   freeze_vision_encoder: true
   num_object_tokens: 10
   num_cross_attn_heads: 8
@@ -11,15 +11,15 @@ model:
   region_source: fused
   attn_implementation: flash_attention_2
 
-  # ========== NEW FEATURES ==========
-  # Enable global self-attention for VQA (all views interact simultaneously)
+  
+  
   use_global_attention: true
 
-  # Enable consistency constraint for InfoNCE (regularizes multi-view embeddings)
+  
   use_consistency_constraint: true
-  consistency_weight: 0.05  # Start with small weight (0.01-0.1)
+  consistency_weight: 0.05  
   unfreeze_lm_head: false
-  # ==================================
+  
 
 loss:
   temperature: 0.1
@@ -44,11 +44,11 @@ data:
   - 448
   num_workers: 0
 
-  # Multi-view InfoNCE configuration
+  
   num_cameras_infonce: 2
   enumerate_camera_pairs: true
 
-  # Multi-view VQA configuration
+  
   min_cameras_vqa: 3
   max_cameras_vqa: null
   enumerate_camera_combinations: true
@@ -56,7 +56,7 @@ data:
   min_frame_interval: 1
   max_frames_per_take: 1000
 
-  # VQA question generation
+  
   generate_questions: true
   max_reid_questions_per_sample: 5
   max_counting_questions_per_sample: 1

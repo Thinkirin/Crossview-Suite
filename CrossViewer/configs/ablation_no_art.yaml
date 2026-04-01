@@ -1,9 +1,9 @@
-# Ablation: w/o ART — mask mean-pool instead of scale-adaptive crop + k-means
 
-# Model
+
+
 model:
   model_class: "CrossViewerModelNoART"
-  vision_encoder_path: null  # set your local model path or Hugging Face model id
+  vision_encoder_path: null  
   freeze_vision_encoder: true
   num_object_tokens: 10
   num_cross_attn_heads: 8
@@ -30,16 +30,16 @@ model:
   use_consistency_constraint: false
   consistency_weight: 0.1
 
-# Loss
+
 loss:
   temperature: 0.07
   info_nce_weight: 1.0
   triplet_weight: 0.1
   vqa_weight: 0.5
 
-# Dataset
+
 data:
-  # For combined JSONL, used to resolve relative image paths (egoexo frames)
+  
   data_root: null
   jsonl_train: null
   jsonl_val: null
@@ -58,9 +58,9 @@ data:
   debug_trace: false
   debug_trace_max: 0
   debug_trace_every: 0
-  # Keep retries bounded so a bad sample cannot stall one rank for too long.
+  
   max_retries: 20
-  # Fail fast on slow/bad media access to reduce cross-rank straggling.
+  
   load_timeout_sec: 10
   cutoff_len: null
   prompt_template: null
@@ -73,7 +73,7 @@ data:
   persistent_workers: true
   pin_memory: true
 
-  # These fields are ignored by the JSONL loader but kept for compatibility
+  
   num_cameras_infonce: 2
   enumerate_camera_pairs: true
   min_cameras_vqa: 2
@@ -91,7 +91,7 @@ data:
     counting: 0.3
     camera_pose: 0.2
 
-# Training
+
 training:
   batch_size: 16
   gradient_accumulation_steps: 1
@@ -113,37 +113,37 @@ training:
   plot_loss: false
   mlflow_tracking_uri: null
 
-  # Multi-GPU
+  
   use_ddp: true
   num_gpus: 4
   use_deepspeed: true
   deepspeed_config: "./deepspeed_zero2.json"
 
-  # Checkpointing
+  
   save_dir: "../checkpoints"
   save_freq: 1
   eval_freq: 1
 
-  # Logging
+  
   log_dir: "../logs"
   log_freq: 1
   wandb_project: "CrossViewer"
   wandb_name: "ablation_no_art_20260308"
-  # Keep non-rank0 logs so first-failure rank errors are visible.
+  
   rank0_only_log: false
-  # Emit step timing in early phase for stall diagnosis.
+  
   timing_log_every: 20
   timing_log_steps: 400
   debug_wait_every_batch: false
   debug_wait_interval: 0
   debug_steps: 20
 
-# Evaluation
+
 evaluation:
   batch_size: 16
   metrics: ["accuracy", "recall@5", "recall@10", "mAP"]
 
-# Optimization
+
 optimizer:
   type: "adamw"
   betas: [0.9, 0.999]
@@ -154,6 +154,6 @@ scheduler:
   min_lr: 1.0e-6
   warmup_ratio: 0.05
 
-# Reproducibility
+
 seed: 42
 deterministic: true
