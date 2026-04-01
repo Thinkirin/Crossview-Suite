@@ -1,108 +1,158 @@
-# CrossView Suite
+<p align="center">
+  <img src="./docs/assets/crossview-suite-banner.svg" alt="CrossView Suite banner" width="100%" />
+</p>
 
-Codebase for **CrossView Suite: Boosting Cross-view Spatial Intelligence of MLLMs with Dataset, Model and Benchmark**.
+<h1 align="center">CrossView Suite</h1>
 
-CrossView Suite studies cross-view spatial intelligence for multimodal large language models (MLLMs) through three coordinated components:
+<p align="center">
+  <strong>Boosting cross-view spatial intelligence of MLLMs with dataset, benchmark, and model design.</strong>
+</p>
 
-- **CrossViewSet**: a large-scale cross-view instruction dataset with mask grounding and object-level supervision.
-- **CrossViewBench**: a scene-disjoint benchmark for evaluating correspondence, visibility, geometry, and physical reasoning across views.
-- **CrossViewer**: a progressive **Perception -> Alignment -> Reasoning** framework for object-centric multi-view reasoning.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-0f172a?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
+  <img src="https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c?style=flat-square&logo=pytorch&logoColor=white" alt="PyTorch 2.0+" />
+  <img src="https://img.shields.io/badge/Backbone-Qwen3--VL-0f766e?style=flat-square" alt="Qwen3-VL" />
+  <img src="https://img.shields.io/badge/Reasoning-Cross--view-155e75?style=flat-square" alt="Cross-view reasoning" />
+  <img src="https://img.shields.io/badge/Release-Model%20Code%20Available-111827?style=flat-square" alt="Model code available" />
+</p>
 
-This repository currently contains the **CrossViewer** model code and training/evaluation scripts under [`CrossViewer/`](./CrossViewer). Suite-level dataset and benchmark assets can be organized under this repository as the project release expands.
+<p align="center">
+  <a href="#overview">Overview</a> |
+  <a href="#crossviewer">CrossViewer</a> |
+  <a href="#repository">Repository</a> |
+  <a href="#quick-start">Quick Start</a> |
+  <a href="#configuration">Configuration</a> |
+  <a href="#status">Status</a>
+</p>
 
-## Highlights
+> Current public snapshot: this repository primarily contains the `CrossViewer/` model code and training and evaluation pipeline. Suite-level dataset and benchmark assets can be added here as the release expands.
 
-- Explicit object-level cross-view alignment instead of relying only on implicit multi-image fusion
-- Mask-grounded object representations for fine-grained multi-view reasoning
+## Overview
+
+CrossView Suite targets a hard gap in multimodal reasoning: understanding the same scene across viewpoints, visibility changes, geometry shifts, and object correspondence. The project is organized as a coordinated suite with data, benchmark, and model components rather than a single model-only release.
+
+| Component | Purpose | Signal in the paper | Repository status |
+| --- | --- | --- | --- |
+| `CrossViewSet` | Large-scale cross-view instruction data with mask grounding and object-level supervision | `1.6M` training samples | Suite-level release can be added under this repository later |
+| `CrossViewBench` | Scene-disjoint benchmark for correspondence, visibility, geometry, and physical reasoning | `17K` questions across `17` task types | Benchmark assets can be added under this repository later |
+| `CrossViewer` | Progressive perception -> alignment -> reasoning framework for object-centric multi-view reasoning | Qwen3-VL-based reasoning pipeline | Available now in [`CrossViewer/`](./CrossViewer) |
+
+<p align="center">
+  <img src="./docs/assets/crossviewer-pipeline.svg" alt="CrossViewer pipeline overview" width="100%" />
+</p>
+
+## CrossViewer
+
+CrossViewer turns multi-view perception into object-level reasoning. Instead of relying only on implicit multi-image fusion, it builds explicit object representations, aligns them across views, and then reasons with a multimodal LLM.
+
+| Module | Role | Why it matters |
+| --- | --- | --- |
+| `ART` | Adaptive Region Tokenizer for mask-grounded object tokenization | Preserves object-level evidence instead of collapsing all views into a single visual stream |
+| `OCVA` | Object-Centric Cross-View Aligner | Performs explicit cross-view alignment before downstream reasoning |
+| `GlobalMultiViewFusion` | Global fusion variant used in comparison settings | Supports ablations and broader fusion baselines |
+| `Qwen3-VL` backbone | Vision-language reasoning backbone | Drives answer generation after alignment-aware perception |
+
+### Highlights
+
+- Explicit object-level cross-view alignment rather than purely implicit fusion
+- Mask-grounded visual representation for fine-grained multi-view reasoning
 - Training and evaluation pipeline built around Qwen3-VL
-- Configs for baseline, ablations, and global fusion variants
+- Baseline, ablation, Hungarian matching, and global-fusion configurations in `configs/`
+- Relative config path resolution, avoiding machine-specific absolute paths in scripts
 
-## Repository Layout
+## Repository
 
 ```text
 Crossview-Suite/
 ├── README.md
+├── docs/
+│   └── assets/
+│       ├── crossview-suite-banner.svg
+│       └── crossviewer-pipeline.svg
 └── CrossViewer/
-    ├── configs/          # Training configs and ablation settings
-    ├── crossviewer/      # Model definition and core modules
+    ├── configs/          # training configs and ablation settings
+    ├── crossviewer/      # model definition and core modules
     ├── data/             # JSONL dataset loader and mask/object utilities
-    ├── scripts/          # Training and evaluation entrypoints
+    ├── scripts/          # training and evaluation entrypoints
     ├── run_train.sh
     ├── run_train_nohup.sh
     └── requirements.txt
 ```
 
-## Current Scope
+### What is available now
 
-The current code snapshot focuses on the **CrossViewer** model implementation:
+- Full `CrossViewer` model implementation
+- Training entrypoint: [`CrossViewer/scripts/train.py`](./CrossViewer/scripts/train.py)
+- Multiple-choice evaluation entrypoint: [`CrossViewer/scripts/eval_mc.py`](./CrossViewer/scripts/eval_mc.py)
+- Configs for default training, global fusion, Hungarian matching, and ablations
 
-- Qwen3-VL-based multi-view reasoning model
-- Scale-adaptive object tokenization and cross-view association
-- JSONL-based training pipeline with inline mask decoding
-- Multiple-choice evaluation script for validation experiments
+## Quick Start
 
-Config path fields are resolved relative to each YAML file, so model, data, checkpoint, and log locations can stay in `configs/*.yaml` without hardcoding machine-specific absolute paths in the scripts.
-
-## Environment
-
-- Python 3.10+
-- PyTorch 2.0+
-- CUDA-capable GPU(s)
-- Qwen3-VL checkpoint
-- Optional: `decord` for video-backed data loading
-- Optional: `deepspeed` for large-scale training
-
-## Installation
+### Installation
 
 ```bash
 cd CrossViewer
 pip install -r requirements.txt
 pip install decord
-# optional
+# optional for large-scale training
 pip install deepspeed
 ```
 
-## Quick Start
-
-1. Fill in `model.vision_encoder_path`, `data.data_root`, `data.jsonl_train`, and `data.jsonl_val` in `configs/*.yaml`.
-2. Make sure the Qwen3-VL checkpoint path or model id and dataset JSONL paths are correct for your environment.
-3. Launch training or evaluation from the `CrossViewer/` directory.
-
-Example training:
+### Train
 
 ```bash
 cd CrossViewer
 torchrun --nproc_per_node=4 --master_port=12355 scripts/train.py --config configs/default.yaml
 ```
 
-Example evaluation:
+### Evaluate
 
 ```bash
 cd CrossViewer
 python scripts/eval_mc.py --config configs/default.yaml --ckpt /path/to/checkpoint
 ```
 
-## Data Expectations
+## Configuration
 
-The training pipeline expects JSONL annotations configured in `configs/*.yaml`. The dataset loader supports:
+All key paths are configured in `CrossViewer/configs/*.yaml`. Required input paths are intentionally left empty in this upload-friendly version, and path fields are resolved relative to each YAML file.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `model.vision_encoder_path` | Yes | Local Qwen3-VL checkpoint path or model identifier |
+| `data.data_root` | Yes | Dataset root used to resolve sample assets |
+| `data.jsonl_train` | Train | Training annotation JSONL |
+| `data.jsonl_val` | Val / Eval | Validation annotation JSONL |
+| `training.save_dir` | Recommended | Checkpoint output directory |
+| `training.log_dir` | Recommended | Logging directory |
+
+Minimal setup flow:
+
+1. Fill in the required paths in your chosen config under [`CrossViewer/configs/`](./CrossViewer/configs).
+2. Confirm the Qwen3-VL checkpoint and JSONL annotations are reachable from your environment.
+3. Launch training or evaluation from the [`CrossViewer/`](./CrossViewer) directory.
+
+## Data
+
+The current data loader is centered on JSONL annotations and supports:
 
 - multi-view samples stored in JSONL format
 - per-view images and object masks
 - inline COCO-style RLE masks
 - object-centric question answering supervision
 
-## Paper Summary
-
-According to the paper, CrossView Suite includes:
-
-- **1.6M** training samples in **CrossViewSet**
-- **17K** benchmark questions in **CrossViewBench**
-- **17** fine-grained task types spanning correspondence, occlusion, geometry, and physical reasoning
-
-CrossViewer is designed to improve cross-view spatial reasoning by combining mask-grounded perception, explicit alignment, and LLM-based reasoning.
+This release is structured so that model code can be used immediately, while larger suite-level assets can be organized into the same repository later.
 
 ## Status
 
-- Current repository content mainly covers the model side: `CrossViewer`
-- Dataset and benchmark release details can be added under this suite later
-- Citation and release metadata can be finalized after the paper submission/publication stage
+| Area | Status |
+| --- | --- |
+| `CrossViewer` model code | Available |
+| Training pipeline | Available |
+| Evaluation pipeline | Available |
+| Suite-level dataset packaging | Can be added later |
+| Suite-level benchmark packaging | Can be added later |
+| Citation metadata | To be finalized with paper release |
+
+## Citation
+
+Citation metadata can be added once the paper release is finalized.
