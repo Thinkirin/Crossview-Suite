@@ -1,4 +1,6 @@
-![CrossView Suite logo](docs/assets/crossview-suite-logo.png)
+| |
+|:--:|
+| [![CrossView Suite logo](docs/assets/crossview-suite-logo-small.png)](docs/assets/crossview-suite-logo.png) |
 
 # CrossView Suite
 
@@ -38,11 +40,11 @@ This repository includes the model implementation, ablations, and configs for de
 
 ## Results
 
-![Gap to strongest reference and HumanBase](docs/assets/fig-human-gap.png)
+[![Gap to strongest reference and HumanBase](docs/assets/fig-human-gap-small.png)](docs/assets/fig-human-gap.png)
 
 Gap to the strongest reference and HumanBase.
 
-![t-SNE of Q1 correspondence embeddings](docs/assets/fig-tsne-morandi-horizontal.png)
+[![t-SNE of Q1 correspondence embeddings](docs/assets/fig-tsne-morandi-horizontal-small.png)](docs/assets/fig-tsne-morandi-horizontal.png)
 
 Q1 correspondence embeddings before and after training.
 
