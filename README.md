@@ -1,31 +1,14 @@
-<p align="center">
-  <img src="./docs/assets/crossview-suite-logo.png" alt="CrossView Suite logo" width="220" />
-</p>
+![CrossView Suite logo](docs/assets/crossview-suite-logo.png)
 
-<h1 align="center">CrossView Suite</h1>
+# CrossView Suite
 
-<p align="center">
-  <strong>Boosting cross-view spatial intelligence of MLLMs with dataset, benchmark, and model design.</strong>
-</p>
+**Boosting cross-view spatial intelligence of MLLMs with dataset, benchmark, and model design.**
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-0f172a?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
-  <img src="https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c?style=flat-square&logo=pytorch&logoColor=white" alt="PyTorch 2.0+" />
-  <img src="https://img.shields.io/badge/Backbone-Qwen3--VL-0f766e?style=flat-square" alt="Qwen3-VL" />
-  <img src="https://img.shields.io/badge/Release-CrossViewer%20Code%20Available-111827?style=flat-square" alt="CrossViewer code available" />
-</p>
+Python 3.10+ | PyTorch 2.0+ | Qwen3-VL backbone | CrossViewer code available
 
-<p align="center">
-  <a href="#overview">Overview</a> |
-  <a href="#architecture">Architecture</a> |
-  <a href="#results">Results</a> |
-  <a href="#repository">Repository</a> |
-  <a href="#quick-start">Quick Start</a>
-</p>
+[Overview](#overview) | [Architecture](#architecture) | [Results](#results) | [Repository](#repository) | [Quick Start](#quick-start)
 
-<p align="center">
-  <img src="./docs/assets/fig-teaser-core.png" alt="CrossView Suite teaser" width="100%" />
-</p>
+![CrossView Suite teaser](docs/assets/fig-teaser-core.png)
 
 ## Overview
 
@@ -37,15 +20,13 @@ The project is structured around three coordinated components:
 | --- | --- | --- | --- |
 | `CrossViewSet` | Large-scale cross-view instruction data with mask grounding and object-level supervision | `1.6M` training samples | Suite-level release can be added under this repository later |
 | `CrossViewBench` | Scene-disjoint benchmark for correspondence, visibility, geometry, and physical reasoning | `17K` questions across `17` task types | Benchmark assets can be added under this repository later |
-| `CrossViewer` | Object-centric multi-view reasoning framework | Qwen3-VL-based training and evaluation pipeline | Available now in [`CrossViewer/`](./CrossViewer) |
+| `CrossViewer` | Object-centric multi-view reasoning framework | Qwen3-VL-based training and evaluation pipeline | Available now in [`CrossViewer/`](CrossViewer) |
 
 > Current public snapshot: this repository mainly contains the `CrossViewer/` model code, configs, and training or evaluation scripts.
 
 ## Architecture
 
-<p align="center">
-  <img src="./docs/assets/figure1r-crossviewer-architecture.png" alt="CrossViewer architecture" width="100%" />
-</p>
+![CrossViewer architecture](docs/assets/figure1r-crossviewer-architecture.png)
 
 CrossViewer follows a progressive pipeline from perception to alignment to reasoning:
 
@@ -57,20 +38,13 @@ This repository includes the model implementation, ablations, and configs for de
 
 ## Results
 
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="./docs/assets/fig-human-gap.png" alt="Gap to strongest reference and HumanBase" width="100%" />
-      <br />
-      <sub>Gap to the strongest reference and HumanBase.</sub>
-    </td>
-    <td align="center" width="50%">
-      <img src="./docs/assets/fig-tsne-morandi-horizontal.png" alt="t-SNE of Q1 correspondence embeddings" width="100%" />
-      <br />
-      <sub>Q1 correspondence embeddings before and after training.</sub>
-    </td>
-  </tr>
-</table>
+![Gap to strongest reference and HumanBase](docs/assets/fig-human-gap.png)
+
+Gap to the strongest reference and HumanBase.
+
+![t-SNE of Q1 correspondence embeddings](docs/assets/fig-tsne-morandi-horizontal.png)
+
+Q1 correspondence embeddings before and after training.
 
 ### Table 3 Highlights
 
@@ -104,9 +78,9 @@ Crossview-Suite/
 
 Key entrypoints:
 
-- Training: [`CrossViewer/scripts/train.py`](./CrossViewer/scripts/train.py)
-- Evaluation: [`CrossViewer/scripts/eval_mc.py`](./CrossViewer/scripts/eval_mc.py)
-- Default config: [`CrossViewer/configs/default.yaml`](./CrossViewer/configs/default.yaml)
+- Training: [`CrossViewer/scripts/train.py`](CrossViewer/scripts/train.py)
+- Evaluation: [`CrossViewer/scripts/eval_mc.py`](CrossViewer/scripts/eval_mc.py)
+- Default config: [`CrossViewer/configs/default.yaml`](CrossViewer/configs/default.yaml)
 
 ## Quick Start
 
