@@ -1,0 +1,27 @@
+# CrossViewer requirements
+
+# Core dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.35.0
+
+# Dataset
+pycocotools
+opencv-python
+pillow
+
+# Logging
+tensorboard
+wandb
+tqdm
+
+# Config
+pyyaml
+
+# Ego4D utilities (already installed locally)
+# ego4d
+
+# Optional
+numpy
+scipy
+matplotlib

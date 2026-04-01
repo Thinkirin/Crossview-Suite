@@ -1,0 +1,126 @@
+# CrossViewer training configuration
+
+# Model
+model:
+  vision_encoder_path: null  # set your local model path or Hugging Face model id
+  freeze_vision_encoder: true
+  num_object_tokens: 10
+  num_cross_attn_heads: 8
+  contrast_dim: 256
+  # Set to "flash_attention_2" to enable FlashAttention2 if available
+  attn_implementation: null
+  use_all_views_for_vqa: true
+  use_all_views_for_infonce: true
+  match_mode: "greedy"                     # "gt"|"greedy"|"hungarian"|"none"
+  region_source: "fused"                   # "fused" or "art" for <REGION> embeddings
+  # Global multi-view fusion for VQA (overrides use_all_views_for_vqa if enabled)
+  use_global_attention: false
+  # Consistency constraint for InfoNCE (only works with use_all_views_for_infonce=true)
+  use_consistency_constraint: false
+  consistency_weight: 0.1
+  unfreeze_lm_head: false
+
+# Loss
+loss:
+  temperature: 0.07
+  info_nce_weight: 1.0
+  triplet_weight: 0.1
+  vqa_weight: 0.5
+
+# Dataset
+data:
+  data_root: null  # set your local dataset root
+  # JSONL preprocessed datasets
+  jsonl_train: null
+  jsonl_val: null
+  include_options_in_question: true
+  cutoff_len: null
+  prompt_template: null
+  max_samples_train: null
+  max_samples_val: null
+  max_objects_per_sample: 5
+  image_size: [448, 448]
+  num_workers: 8
+
+  # InfoNCE camera configuration
+  num_cameras_infonce: 2                    # InfoNCE uses 2 cameras (fixed)
+  enumerate_camera_pairs: true              # Whether to enumerate all camera pairs for InfoNCE
+
+  # VQA camera configuration
+  min_cameras_vqa: 3                        # Minimum cameras for VQA (camera_pose task)
+  max_cameras_vqa: null                     # Maximum cameras for VQA (null = no limit, use all available)
+  enumerate_camera_combinations: true       # Whether to enumerate all camera combinations for VQA
+
+  # Frame sampling configuration
+  min_frame_interval: 1                     # Minimum interval between sampled frames (1 = every frame)
+  max_frames_per_take: 1000                 # Maximum number of frames to sample per take (effectively unlimited)
+
+  # VQA question generation
+  generate_questions: true                  # Whether to generate VQA questions
+  max_reid_questions_per_sample: 5          # Max Re-ID questions per sample
+  max_counting_questions_per_sample: 1      # Max Counting questions per sample
+  max_camera_pose_questions_per_sample: 1   # Max Camera Pose questions per sample
+  compute_infonce_once: true                # Only compute InfoNCE for the first question of each config (avoids redundant computation)
+  task_distribution:                        # Task sampling probabilities
+    reid: 0.5
+    counting: 0.3
+    camera_pose: 0.2
+
+# Training
+training:
+  batch_size: 8  # per GPU
+  gradient_accumulation_steps: 1
+  num_epochs: 20
+  learning_rate: 1.0e-4
+  weight_decay: 0.01
+  warmup_steps: 500
+  warmup_ratio: null
+  gradient_clip: 1.0
+  min_lr: 1.0e-6
+  save_steps: null
+  eval_steps: null
+  resume_from: null
+  resume_tag: null
+  lr_scheduler_type: cosine
+  save_only_model: false
+  report_to: tensorboard
+  run_name: null
+  plot_loss: false
+  mlflow_tracking_uri: null
+
+  # Multi-GPU
+  use_ddp: true
+  num_gpus: 4
+  use_deepspeed: false
+  deepspeed_config: "./deepspeed_zero2.json"
+
+  # Checkpointing
+  save_dir: "../checkpoints"
+  save_freq: 1  # epochs
+  eval_freq: 1  # epochs
+
+  # Logging
+  log_dir: "../logs"
+  log_freq: 10  # steps
+  wandb_project: "CrossViewer"
+  wandb_name: "crossviewer_baseline"
+
+# Evaluation
+evaluation:
+  batch_size: 16
+  metrics: ["accuracy", "recall@5", "recall@10", "mAP"]
+
+# Optimization
+optimizer:
+  type: "adamw"
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+
+scheduler:
+  type: "cosine"
+  min_lr: 1.0e-6
+  warmup_ratio: 0.05
+
+# Reproducibility
+seed: 42
+deterministic: true

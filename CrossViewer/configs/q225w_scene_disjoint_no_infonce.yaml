@@ -1,0 +1,158 @@
+# CrossViewer Training Configuration for 80w combined JSONL dataset
+
+# Model
+model:
+  vision_encoder_path: null  # set your local model path or Hugging Face model id
+  freeze_vision_encoder: true
+  num_object_tokens: 10
+  num_cross_attn_heads: 8
+  contrast_dim: 256
+  attn_implementation: "flash_attention_2"
+  load_directly_to_gpu: true
+  low_cpu_mem_usage: true
+  use_all_views_for_vqa: true
+  use_all_views_for_infonce: false
+  match_mode: "greedy"
+  region_source: "fused"
+  pixelrefer_mode: "gpu_full"
+  preprocess_on_gpu: true
+  force_compute_infonce: false
+  debug_pixelrefer: false
+  debug_pixelrefer_max_steps: 0
+  debug_pixelrefer_max_masks: 0
+  debug_pixelrefer_every: 1
+  debug_pixelrefer_per_mask_preprocess: false
+  debug_nan: false
+  freeze_pos_encoder: false
+  unfreeze_lm_head: false
+  use_global_attention: false
+  use_consistency_constraint: false
+  consistency_weight: 0.1
+
+# Loss
+loss:
+  temperature: 0.07
+  info_nce_weight: 0.0
+  triplet_weight: 0.1
+  vqa_weight: 0.5
+
+# Dataset
+data:
+  # For combined JSONL, used to resolve relative image paths (egoexo frames)
+  data_root: null
+  jsonl_train: null
+  jsonl_val: null
+  lazy_load: true
+  index_cache: true
+  include_options_in_question: true
+  resample_strategy: "random"
+  image_only: true
+  use_additional_inputs: false
+  use_processor: false
+  return_raw_images: true
+  defer_region_token_expansion: true
+  debug_timing: false
+  timing_every: 200
+  timing_max_logs: 30
+  debug_trace: false
+  debug_trace_max: 0
+  debug_trace_every: 0
+  # Keep retries bounded so a bad sample cannot stall one rank for too long.
+  max_retries: 20
+  # Fail fast on slow/bad media access to reduce cross-rank straggling.
+  load_timeout_sec: 10
+  cutoff_len: null
+  prompt_template: null
+  max_samples_train: null
+  max_samples_val: null
+  max_objects_per_sample: 6
+  image_size: [448, 448]
+  num_workers: 2
+  prefetch_factor: 1
+  persistent_workers: true
+  pin_memory: true
+
+  # These fields are ignored by the JSONL loader but kept for compatibility
+  num_cameras_infonce: 2
+  enumerate_camera_pairs: true
+  min_cameras_vqa: 2
+  max_cameras_vqa: null
+  enumerate_camera_combinations: true
+  min_frame_interval: 1
+  max_frames_per_take: 1000
+  generate_questions: false
+  max_reid_questions_per_sample: 5
+  max_counting_questions_per_sample: 1
+  max_camera_pose_questions_per_sample: 1
+  compute_infonce_once: false
+  task_distribution:
+    reid: 0.5
+    counting: 0.3
+    camera_pose: 0.2
+
+# Training
+training:
+  batch_size: 16
+  gradient_accumulation_steps: 1
+  num_epochs: 1
+  learning_rate: 1.0e-4
+  weight_decay: 0.01
+  warmup_steps: 500
+  warmup_ratio: null
+  gradient_clip: 1.0
+  min_lr: 1.0e-6
+  save_steps: 500
+  eval_steps: null
+  resume_from: null
+  resume_tag: null
+  lr_scheduler_type: cosine
+  save_only_model: false
+  report_to: wandb
+  run_name: "q225w_scene_disjoint_no_infonce_20260302"
+  plot_loss: false
+  mlflow_tracking_uri: null
+
+  # Multi-GPU
+  use_ddp: true
+  num_gpus: 4
+  use_deepspeed: true
+  deepspeed_config: "./deepspeed_zero2.json"
+
+  # Checkpointing
+  save_dir: "../checkpoints"
+  save_freq: 1
+  eval_freq: 1
+
+  # Logging
+  log_dir: "../logs"
+  log_freq: 1
+  wandb_project: "CrossViewer"
+  wandb_name: "q225w_scene_disjoint_no_infonce_20260302"
+  # Keep non-rank0 logs so first-failure rank errors are visible.
+  rank0_only_log: false
+  # Emit step timing in early phase for stall diagnosis.
+  timing_log_every: 20
+  timing_log_steps: 400
+  debug_wait_every_batch: false
+  debug_wait_interval: 0
+  debug_steps: 20
+
+# Evaluation
+evaluation:
+  batch_size: 16
+  metrics: ["accuracy", "recall@5", "recall@10", "mAP"]
+
+# Optimization
+optimizer:
+  type: "adamw"
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+
+scheduler:
+  type: "cosine"
+  min_lr: 1.0e-6
+  warmup_ratio: 0.05
+
+# Reproducibility
+seed: 42
+deterministic: true

@@ -1,0 +1,127 @@
+# CrossViewer Training Configuration with Global Multi-View Fusion
+# This config enables the new global attention mechanism and consistency constraint
+
+model:
+  vision_encoder_path: null  # set your local model path or Hugging Face model id
+  freeze_vision_encoder: true
+  num_object_tokens: 10
+  num_cross_attn_heads: 8
+  contrast_dim: 256
+  match_mode: greedy
+  region_source: fused
+  attn_implementation: flash_attention_2
+
+  # ========== NEW FEATURES ==========
+  # Enable global self-attention for VQA (all views interact simultaneously)
+  use_global_attention: true
+
+  # Enable consistency constraint for InfoNCE (regularizes multi-view embeddings)
+  use_consistency_constraint: true
+  consistency_weight: 0.05  # Start with small weight (0.01-0.1)
+  unfreeze_lm_head: false
+  # ==================================
+
+loss:
+  temperature: 0.1
+  info_nce_weight: 1.0
+  triplet_weight: 0.1
+  vqa_weight: 0.5
+
+data:
+  data_root: null
+  jsonl_train: null
+  jsonl_val: null
+  include_options_in_question: true
+  video_backend: decord
+  decord_num_threads: 1
+  max_retries: 5
+  load_timeout_sec: 2
+  max_samples_train: null
+  max_samples_val: null
+  max_objects_per_sample: 5
+  image_size:
+  - 448
+  - 448
+  num_workers: 0
+
+  # Multi-view InfoNCE configuration
+  num_cameras_infonce: 2
+  enumerate_camera_pairs: true
+
+  # Multi-view VQA configuration
+  min_cameras_vqa: 3
+  max_cameras_vqa: null
+  enumerate_camera_combinations: true
+
+  min_frame_interval: 1
+  max_frames_per_take: 1000
+
+  # VQA question generation
+  generate_questions: true
+  max_reid_questions_per_sample: 5
+  max_counting_questions_per_sample: 1
+  max_camera_pose_questions_per_sample: 1
+  compute_infonce_once: true
+
+  task_distribution:
+    reid: 0.5
+    counting: 0.3
+    camera_pose: 0.2
+
+  prompt_template: 'You are a helpful visual assistant.
+
+    Question: {question}
+
+    Options:
+
+    {options}
+
+    Answer:'
+  cutoff_len: 512
+
+training:
+  batch_size: 16
+  num_epochs: 2
+  learning_rate: 0.0001
+  weight_decay: 0.01
+  warmup_steps: null
+  warmup_ratio: 0.05
+  gradient_clip: 1.0
+  gradient_accumulation_steps: 2
+  debug_steps: 10
+  use_ddp: true
+  num_gpus: 8
+  use_deepspeed: true
+  deepspeed_config: "./deepspeed_zero2.json"
+  save_dir: "../checkpoints"
+  save_freq: 1
+  eval_freq: 1
+  log_dir: "../logs"
+  log_freq: 1
+  wandb_project: CrossViewer
+  wandb_name: core_global_fusion
+  report_to: wandb
+  run_name: core_global_attention_exp
+
+evaluation:
+  batch_size: 1
+  metrics:
+  - accuracy
+  - recall@5
+  - recall@10
+  - mAP
+
+optimizer:
+  type: adamw
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-08
+
+scheduler:
+  type: cosine
+  min_lr: 1.0e-06
+  warmup_ratio: 0.05
+
+seed: 42
+deterministic: true
